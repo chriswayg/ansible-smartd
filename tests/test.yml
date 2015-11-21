@@ -1,0 +1,5 @@
+---
+- hosts: localhost
+  # not using random times to be able to test for idempotence
+  roles:
+    - { role: ansible-smartd, smartd_short_test_hour: '1', smartd_long_test_dow: '2', smartd_long_test_hour: '3' }
