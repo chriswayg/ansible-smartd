@@ -21,7 +21,6 @@
 
 - name: create smartd configuration file
   template: src=smartd.conf.j2 dest=/etc/smartd.conf
-    owner=root group=root mode=0644
   notify: restart smartd
   when: smart|success
 

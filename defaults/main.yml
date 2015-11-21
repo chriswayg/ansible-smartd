@@ -1,4 +1,8 @@
 ---
+smartd_long_test_dow_random: false
+smartd_long_test_hour_random: false
+smartd_short_test_hour_random: false
+
 smartd_short_test_month: '..'
 smartd_short_test_dom: '..'
 smartd_short_test_dow: '.'
