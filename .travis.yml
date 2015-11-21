@@ -1,14 +1,46 @@
+
 ---
 language: python
 python: "2.7"
+env:
+  - ANSIBLE_VERSION=latest
+  - ANSIBLE_VERSION=1.9.3
+  - ANSIBLE_VERSION=1.8.4
+  - ANSIBLE_VERSION=1.7.2
+  - ANSIBLE_VERSION=1.6.10
+  # - ANSIBLE_VERSION=1.5.5
+  # - ANSIBLE_VERSION=1.4.5
+
+branches:
+  only:
+    - master
+
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq python-apt python-pycurl
+ - sudo apt-get update -qq
+ - sudo apt-get install -qq python-apt python-pycurl
 install:
-  - sudo pip install ansible
-  - sudo ansible-galaxy install -f kalos.smartd
+  # Install Ansible.
+  - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip install ansible; else pip install ansible==$ANSIBLE_VERSION; fi
+
+  - echo -e 'localhost  ansible_connection=local' > tests/inventory
+  - echo -e '[defaults]\nroles_path = ../\nhostfile = ./tests/inventory\nremote_user = root' > ansible.cfg
+
 script:
-  - echo localhost > inventory
-  - ansible-playbook --syntax-check -i inventory playbook.yml
-  - ansible-playbook -i inventory --connection=local -u root --sudo -vvvv playbook.yml
+script:
+  # Check the role/playbook's syntax.
+  - ansible-playbook tests/test.yml --syntax-check
+
+  # Run the role/playbook with ansible-playbook.
+  - ansible-playbook tests/test.yml --sudo -vvvv
+
+  # Run the role/playbook again, checking to make sure it's idempotent.
+  - >
+    ansible-playbook tests/test.yml --sudo
+    | grep -q 'changed=0.*failed=0'
+    && (echo 'Idempotence test: pass' && exit 0)
+    || (echo 'Idempotence test: fail' && exit 1)
+notifications:
+  email:
+    on_failure: always
+    on_success: change
 
