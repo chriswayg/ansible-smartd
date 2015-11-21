@@ -15,9 +15,9 @@
   ignore_errors: True
   changed_when: false
 
-- name: remove smartmontools when disks do not support smart
-  apt: pkg=smartmontools state=absent
-  when: smart|failed
+# - name: remove smartmontools when disks do not support smart
+#   apt: pkg=smartmontools state=absent
+#   when: smart|failed
 
 - name: create smartd configuration file
   template: src=smartd.conf.j2 dest=/etc/smartd.conf
