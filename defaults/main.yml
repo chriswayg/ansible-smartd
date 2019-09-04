@@ -12,3 +12,10 @@ smartd_long_test_month: '..'
 smartd_long_test_dom: '..'
 smartd_long_test_dow: 'random'
 smartd_long_test_hour: 'random'
+
+## Example
+# smartd_disks:
+# - {disk: '/dev/sda' }
+# smartd_short_test_hour: '3'
+# smartd_long_test_dow: '1'
+# smartd_long_test_hour: '4'
