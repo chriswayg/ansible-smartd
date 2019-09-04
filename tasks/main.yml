@@ -1,6 +1,8 @@
 ---
 - name: install smartmontools
-  apt: pkg=smartmontools state=installed
+  apt:
+    name: smartmontools
+    state: present
 
 # TODO: list disks with ansible facts
 - name: list disks present in the system
@@ -10,7 +12,7 @@
 
 - name: check if disks support SMART
   shell: "smartctl -s on {{ item }} ; smartctl -i {{ item }} | grep -qc 'SMART support is: Enabled'"
-  with_items: disks.stdout_lines
+  with_items: "{{ disks.stdout_lines }}"
   register: smart
   ignore_errors: True
   changed_when: false
@@ -22,7 +24,7 @@
 - name: create smartd configuration file
   template: src=smartd.conf.j2 dest=/etc/smartd.conf
   notify: restart smartd
-  when: smart|success
+  when: smart is success
 
 - name: enable smartd on system startup (default file)
   lineinfile: >
@@ -30,7 +32,7 @@
     regexp="^start_smartd="
     line="start_smartd=yes"
   notify: restart smartd
-  when: smart|success
+  when: smart is success
 
 - name: pass additional options to smartd on startup (default file)
   lineinfile: >
@@ -38,8 +40,8 @@
     regexp="^smartd_opts="
     line='smartd_opts="--interval=1800"'
   notify: restart smartd
-  when: smart|success
+  when: smart is success
 
 - name: enable smartd service
   service: name=smartd enabled=yes
-  when: smart|success
+  when: smart is success
